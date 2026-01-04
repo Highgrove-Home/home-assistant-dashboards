@@ -1,0 +1,970 @@
+kiosk_mode:
+  hide_header: true
+  hide_sidebar: true
+  admin_settings:
+    hide_header: false
+    hide_sidebar: false
+views:
+  - title: Bedroom
+    path: bedroom
+    icon: mdi:bed
+    type: panel
+    theme: backend-selected
+    background: >-
+      center / cover no-repeat fixed radial-gradient(circle at 15% 15%,
+      rgba(151, 87, 167, 0.4) 0%, transparent 45%), radial-gradient(circle at
+      85% 85%, rgba(75, 124, 132, 0.35) 0%, transparent 45%),
+      radial-gradient(circle at 50% 100%, rgba(71, 193, 232, 0.2) 0%,
+      transparent 40%), linear-gradient(135deg, #1a1625 0%, #0d1117 100%)
+    card_mod:
+      style:
+        hui-panel-view$: |
+          #columns {
+            overflow: hidden !important;
+            max-height: 100vh !important;
+          }
+        .: |
+          hui-view {
+            overflow: hidden !important;
+          }
+    cards:
+      - type: custom:layout-card
+        layout_type: custom:grid-layout
+        card_mod:
+          style: |
+            ha-card {
+              background: transparent !important;
+              box-shadow: none !important;
+              border: none !important;
+              overflow: hidden !important;
+              height: 100vh !important;
+              max-height: 100vh !important;
+            }
+            :host {
+              overflow: hidden !important;
+              height: 100vh !important;
+            }
+        layout:
+          grid-template-columns: 1fr 1fr
+          grid-template-rows: auto 1fr 1fr
+          grid-gap: 12px
+          margin: 12px
+          height: calc(100vh - 24px)
+          max-height: calc(100vh - 24px)
+          overflow: hidden
+          align-items: stretch
+        cards:
+          - type: custom:stack-in-card
+            view_layout:
+              grid-column: 1 / -1
+            mode: vertical
+            card_mod:
+              style: |
+                ha-card {
+                  background: rgba(255, 255, 255, 0.1);
+                  border: 1px solid rgba(255, 255, 255, 0.1);
+                  border-radius: 20px;
+                  box-shadow: none;
+                  padding: 10px 16px;
+                }
+            cards:
+              - type: custom:button-card
+                entity: sensor.ultimatesensor_scd41_co2
+                show_state: false
+                show_name: false
+                show_icon: false
+                tap_action:
+                  action: none
+                custom_fields:
+                  time: |
+                    [[[
+                      const now = new Date();
+                      return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+                    ]]]
+                  date: |
+                    [[[
+                      const now = new Date();
+                      return now.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+                    ]]]
+                  room: |
+                    [[[
+                      const temp = states['sensor.ultimatesensor_scd41_temperature'];
+                      const t = temp ? Math.round(parseFloat(temp.state)) : '--';
+                      const occ = states['binary_sensor.ultimatesensor_occupancy'];
+                      const dot = occ && occ.state === 'on' ? '<span style="color: #4ade80">●</span>' : '<span style="color: rgba(255,255,255,0.3)">○</span>';
+                      return `${dot} Bedroom · <span style="color: rgba(255, 255, 255, 0.7)">${t}°C</span>`;
+                    ]]]
+                styles:
+                  card:
+                    - background: transparent
+                    - box-shadow: none
+                    - padding: 0
+                  grid:
+                    - grid-template-areas: '"time . room" "date . room"'
+                    - grid-template-columns: auto 1fr auto
+                    - grid-template-rows: auto auto
+                    - align-items: center
+                  custom_fields:
+                    time:
+                      - font-size: 42px
+                      - font-weight: 300
+                      - color: white
+                      - letter-spacing: '-1px'
+                      - justify-self: start
+                    date:
+                      - font-size: 16px
+                      - color: rgba(255, 255, 255, 0.5)
+                      - justify-self: start
+                    room:
+                      - font-size: 18px
+                      - font-weight: 500
+                      - color: white
+                      - justify-self: end
+                      - grid-row: 1 / 3
+                      - align-self: center
+              - type: horizontal-stack
+                cards:
+                  - type: custom:button-card
+                    color_type: blank-card
+                    styles:
+                      card:
+                        - background: transparent
+                        - box-shadow: none
+                        - flex: 1
+                  - type: custom:button-card
+                    entity: sensor.ultimatesensor_scd41_co2
+                    icon: mdi:molecule-co2
+                    show_name: false
+                    show_state: true
+                    tap_action:
+                      action: more-info
+                    state_display: |
+                      [[[
+                        return Math.round(parseFloat(entity.state));
+                      ]]]
+                    card_mod:
+                      style: |
+                        ha-card {
+                          background: rgba(255,255,255,0.1) !important;
+                          border-radius: 16px !important;
+                          overflow: hidden !important;
+                        }
+                    styles:
+                      card:
+                        - background: rgba(255,255,255,0.1)
+                        - padding: 6px 10px
+                        - border-radius: 16px
+                        - box-shadow: none
+                        - margin-top: 8px
+                        - width: fit-content
+                        - min-width: 0
+                        - flex: none
+                        - overflow: hidden
+                      grid:
+                        - grid-template-areas: '"i s"'
+                        - grid-template-columns: min-content min-content
+                        - justify-items: start
+                        - align-items: center
+                      icon:
+                        - width: 16px
+                        - color: |
+                            [[[
+                              const v = parseFloat(entity.state);
+                              if (v < 800) return '#4ade80';
+                              if (v < 1200) return '#facc15';
+                              return '#fb923c';
+                            ]]]
+                      state:
+                        - font-size: 15px
+                        - font-weight: 500
+                        - margin-left: 5px
+                        - color: |
+                            [[[
+                              const v = parseFloat(entity.state);
+                              if (v < 800) return '#4ade80';
+                              if (v < 1200) return '#facc15';
+                              return '#fb923c';
+                            ]]]
+                  - type: custom:button-card
+                    entity: sensor.ultimatesensor_voc_index
+                    icon: mdi:air-filter
+                    show_name: false
+                    show_state: true
+                    tap_action:
+                      action: more-info
+                    state_display: |
+                      [[[
+                        return Math.round(parseFloat(entity.state));
+                      ]]]
+                    card_mod:
+                      style: |
+                        ha-card {
+                          background: rgba(255,255,255,0.1) !important;
+                          border-radius: 16px !important;
+                          overflow: hidden !important;
+                        }
+                    styles:
+                      card:
+                        - background: rgba(255,255,255,0.1)
+                        - padding: 6px 10px
+                        - border-radius: 16px
+                        - box-shadow: none
+                        - margin-top: 8px
+                        - margin-left: 6px
+                        - width: fit-content
+                        - min-width: 0
+                        - flex: none
+                        - overflow: hidden
+                      grid:
+                        - grid-template-areas: '"i s"'
+                        - grid-template-columns: min-content min-content
+                        - justify-items: start
+                        - align-items: center
+                      icon:
+                        - width: 16px
+                        - color: |
+                            [[[
+                              const v = parseFloat(entity.state);
+                              if (v < 150) return '#4ade80';
+                              if (v < 250) return '#facc15';
+                              return '#ef4444';
+                            ]]]
+                      state:
+                        - font-size: 15px
+                        - font-weight: 500
+                        - margin-left: 5px
+                        - color: |
+                            [[[
+                              const v = parseFloat(entity.state);
+                              if (v < 150) return '#4ade80';
+                              if (v < 250) return '#facc15';
+                              return '#ef4444';
+                            ]]]
+                  - type: custom:button-card
+                    entity: sensor.ultimatesensor_pm_2_5mm_weight_concentration
+                    icon: mdi:blur
+                    show_name: false
+                    show_state: true
+                    tap_action:
+                      action: more-info
+                    state_display: |
+                      [[[
+                        return Math.round(parseFloat(entity.state));
+                      ]]]
+                    card_mod:
+                      style: |
+                        ha-card {
+                          background: rgba(255,255,255,0.1) !important;
+                          border-radius: 16px !important;
+                          overflow: hidden !important;
+                        }
+                    styles:
+                      card:
+                        - background: rgba(255,255,255,0.1)
+                        - padding: 6px 10px
+                        - border-radius: 16px
+                        - box-shadow: none
+                        - margin-top: 8px
+                        - margin-left: 6px
+                        - width: fit-content
+                        - min-width: 0
+                        - flex: none
+                        - overflow: hidden
+                      grid:
+                        - grid-template-areas: '"i s"'
+                        - grid-template-columns: min-content min-content
+                        - justify-items: start
+                        - align-items: center
+                      icon:
+                        - width: 16px
+                        - color: |
+                            [[[
+                              const v = parseFloat(entity.state);
+                              if (v < 12) return '#4ade80';
+                              if (v < 35) return '#facc15';
+                              return '#fb923c';
+                            ]]]
+                      state:
+                        - font-size: 15px
+                        - font-weight: 500
+                        - margin-left: 5px
+                        - color: |
+                            [[[
+                              const v = parseFloat(entity.state);
+                              if (v < 12) return '#4ade80';
+                              if (v < 35) return '#facc15';
+                              return '#fb923c';
+                            ]]]
+                  - type: custom:button-card
+                    entity: sensor.ultimatesensor_scd41_humidity
+                    icon: mdi:water-percent
+                    show_name: false
+                    show_state: true
+                    tap_action:
+                      action: more-info
+                    state_display: |
+                      [[[
+                        return Math.round(parseFloat(entity.state)) + '%';
+                      ]]]
+                    card_mod:
+                      style: |
+                        ha-card {
+                          background: rgba(255,255,255,0.1) !important;
+                          border-radius: 16px !important;
+                          overflow: hidden !important;
+                        }
+                    styles:
+                      card:
+                        - background: rgba(255,255,255,0.1)
+                        - padding: 6px 10px
+                        - border-radius: 16px
+                        - box-shadow: none
+                        - margin-top: 8px
+                        - margin-left: 6px
+                        - width: fit-content
+                        - min-width: 0
+                        - flex: none
+                        - overflow: hidden
+                      grid:
+                        - grid-template-areas: '"i s"'
+                        - grid-template-columns: min-content min-content
+                        - justify-items: start
+                        - align-items: center
+                      icon:
+                        - width: 16px
+                        - color: |
+                            [[[
+                              const v = parseFloat(entity.state);
+                              if (v < 30) return '#fb923c';
+                              if (v < 60) return '#4ade80';
+                              return '#3b82f6';
+                            ]]]
+                      state:
+                        - font-size: 15px
+                        - font-weight: 500
+                        - margin-left: 5px
+                        - color: |
+                            [[[
+                              const v = parseFloat(entity.state);
+                              if (v < 30) return '#fb923c';
+                              if (v < 60) return '#4ade80';
+                              return '#3b82f6';
+                            ]]]
+                  - type: custom:button-card
+                    entity: sensor.ultimatesensor_bh1750_illuminance
+                    icon: mdi:brightness-6
+                    show_name: false
+                    show_state: true
+                    tap_action:
+                      action: more-info
+                    state_display: |
+                      [[[
+                        return Math.round(parseFloat(entity.state)) + ' lx';
+                      ]]]
+                    card_mod:
+                      style: |
+                        ha-card {
+                          background: rgba(255,255,255,0.1) !important;
+                          border-radius: 16px !important;
+                          overflow: hidden !important;
+                        }
+                    styles:
+                      card:
+                        - background: rgba(255,255,255,0.1)
+                        - padding: 6px 10px
+                        - border-radius: 16px
+                        - box-shadow: none
+                        - margin-top: 8px
+                        - margin-left: 6px
+                        - width: fit-content
+                        - min-width: 0
+                        - flex: none
+                        - overflow: hidden
+                      grid:
+                        - grid-template-areas: '"i s"'
+                        - grid-template-columns: min-content min-content
+                        - justify-items: start
+                        - align-items: center
+                      icon:
+                        - width: 16px
+                        - color: rgba(255, 255, 255, 0.6)
+                      state:
+                        - font-size: 15px
+                        - font-weight: 500
+                        - margin-left: 5px
+                        - color: rgba(255, 255, 255, 0.6)
+                  - type: custom:button-card
+                    color_type: blank-card
+                    styles:
+                      card:
+                        - background: transparent
+                        - box-shadow: none
+                        - flex: 1
+          - type: custom:stack-in-card
+            mode: vertical
+            card_mod:
+              style: |
+                ha-card {
+                  background: rgba(255, 255, 255, 0.1);
+                  border: 1px solid rgba(255, 255, 255, 0.1);
+                  border-radius: 20px;
+                  box-shadow: none;
+                  padding: 16px;
+                  height: 100%;
+                  box-sizing: border-box;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                }
+            cards:
+              - type: custom:button-card
+                name: LIGHTS
+                show_icon: false
+                show_state: false
+                styles:
+                  card:
+                    - background: transparent
+                    - box-shadow: none
+                    - padding: 0 0 10px 0
+                    - border-radius: 0
+                  name:
+                    - font-size: 12px
+                    - font-weight: 600
+                    - letter-spacing: 2px
+                    - color: rgba(255, 255, 255, 0.5)
+                    - justify-self: start
+              - type: custom:layout-card
+                layout_type: custom:grid-layout
+                layout:
+                  grid-template-columns: 1fr 1fr 1fr
+                  grid-gap: 8px
+                card_mod:
+                  style: |
+                    ha-card {
+                      height: 100%;
+                    }
+                cards:
+                  - type: custom:button-card
+                    entity: light.desk_lights
+                    name: Desk
+                    icon: mdi:desk-lamp
+                    tap_action:
+                      action: toggle
+                    hold_action:
+                      action: more-info
+                    show_state: true
+                    card_mod:
+                      style: |
+                        ha-card {
+                          border-radius: 14px !important;
+                          overflow: hidden !important;
+                          height: 100% !important;
+                        }
+                    styles:
+                      card:
+                        - padding: 14px 12px
+                        - background: |
+                            [[[
+                              if (entity.state === 'on')
+                                return 'rgba(255, 170, 0, 0.25)';
+                              return 'rgba(255, 255, 255, 0.05)';
+                            ]]]
+                        - border: 1px solid rgba(255, 255, 255, 0.1)
+                        - box-shadow: none
+                        - transition: all 0.3s ease
+                        - border-radius: 14px
+                        - overflow: hidden
+                      grid:
+                        - grid-template-areas: '"i" "n" "s"'
+                        - grid-template-rows: 1fr min-content min-content
+                      icon:
+                        - width: 32px
+                        - color: |
+                            [[[
+                              if (entity.state === 'on') return '#ffaa00';
+                              return 'rgba(255, 255, 255, 0.4)';
+                            ]]]
+                      name:
+                        - font-size: 16px
+                        - font-weight: 500
+                        - margin-top: 6px
+                        - color: white
+                      state:
+                        - font-size: 14px
+                        - color: rgba(255, 255, 255, 0.5)
+                  - type: custom:button-card
+                    entity: light.desk_lights
+                    name: Ceiling
+                    icon: mdi:ceiling-light
+                    tap_action:
+                      action: toggle
+                    hold_action:
+                      action: more-info
+                    show_state: true
+                    card_mod:
+                      style: |
+                        ha-card {
+                          border-radius: 14px !important;
+                          overflow: hidden !important;
+                          height: 100% !important;
+                        }
+                    styles:
+                      card:
+                        - padding: 14px 12px
+                        - background: |
+                            [[[
+                              if (entity.state === 'on')
+                                return 'rgba(255, 170, 0, 0.25)';
+                              return 'rgba(255, 255, 255, 0.05)';
+                            ]]]
+                        - border: 1px solid rgba(255, 255, 255, 0.1)
+                        - box-shadow: none
+                        - transition: all 0.3s ease
+                        - border-radius: 14px
+                        - overflow: hidden
+                      grid:
+                        - grid-template-areas: '"i" "n" "s"'
+                        - grid-template-rows: 1fr min-content min-content
+                      icon:
+                        - width: 32px
+                        - color: |
+                            [[[
+                              if (entity.state === 'on') return '#ffaa00';
+                              return 'rgba(255, 255, 255, 0.4)';
+                            ]]]
+                      name:
+                        - font-size: 16px
+                        - font-weight: 500
+                        - margin-top: 6px
+                        - color: white
+                      state:
+                        - font-size: 14px
+                        - color: rgba(255, 255, 255, 0.5)
+                  - type: custom:button-card
+                    entity: light.desk_lights
+                    name: Bed
+                    icon: mdi:lamp
+                    tap_action:
+                      action: toggle
+                    hold_action:
+                      action: more-info
+                    show_state: true
+                    card_mod:
+                      style: |
+                        ha-card {
+                          border-radius: 14px !important;
+                          overflow: hidden !important;
+                          height: 100% !important;
+                        }
+                    styles:
+                      card:
+                        - padding: 14px 12px
+                        - background: |
+                            [[[
+                              if (entity.state === 'on')
+                                return 'rgba(255, 170, 0, 0.25)';
+                              return 'rgba(255, 255, 255, 0.05)';
+                            ]]]
+                        - border: 1px solid rgba(255, 255, 255, 0.1)
+                        - box-shadow: none
+                        - transition: all 0.3s ease
+                        - border-radius: 14px
+                        - overflow: hidden
+                      grid:
+                        - grid-template-areas: '"i" "n" "s"'
+                        - grid-template-rows: 1fr min-content min-content
+                      icon:
+                        - width: 32px
+                        - color: |
+                            [[[
+                              if (entity.state === 'on') return '#ffaa00';
+                              return 'rgba(255, 255, 255, 0.4)';
+                            ]]]
+                      name:
+                        - font-size: 16px
+                        - font-weight: 500
+                        - margin-top: 6px
+                        - color: white
+                      state:
+                        - font-size: 14px
+                        - color: rgba(255, 255, 255, 0.5)
+          - type: custom:stack-in-card
+            mode: vertical
+            card_mod:
+              style: |
+                ha-card {
+                  background: rgba(255, 255, 255, 0.1);
+                  border: 1px solid rgba(255, 255, 255, 0.1);
+                  border-radius: 20px;
+                  box-shadow: none;
+                  padding: 16px;
+                  height: 100%;
+                  box-sizing: border-box;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                }
+            cards:
+              - type: custom:button-card
+                name: CLIMATE
+                show_icon: false
+                show_state: false
+                styles:
+                  card:
+                    - background: transparent
+                    - box-shadow: none
+                    - padding: 0 0 10px 0
+                    - border-radius: 0
+                  name:
+                    - font-size: 12px
+                    - font-weight: 600
+                    - letter-spacing: 2px
+                    - color: rgba(255, 255, 255, 0.5)
+                    - justify-self: start
+              - type: custom:layout-card
+                layout_type: custom:grid-layout
+                layout:
+                  grid-template-columns: 1fr 1fr
+                  grid-gap: 8px
+                cards:
+                  - type: custom:mushroom-climate-card
+                    entity: climate.bedroom_ac
+                    name: AC
+                    icon: mdi:air-conditioner
+                    show_temperature_control: true
+                    collapsible_controls: false
+                    fill_container: true
+                    card_mod:
+                      style: |
+                        ha-card {
+                          background: rgba(255, 255, 255, 0.05) !important;
+                          border-radius: 14px !important;
+                          border: 1px solid rgba(255, 255, 255, 0.1) !important;
+                          box-shadow: none !important;
+                          --card-primary-font-size: 16px;
+                          --card-secondary-font-size: 14px;
+                          --icon-size: 24px;
+                          --spacing: 8px;
+                          overflow: hidden !important;
+                          padding: 12px !important;
+                          height: 100% !important;
+                          box-sizing: border-box !important;
+                        }
+                        mushroom-climate-temperature-control {
+                          --control-height: 32px;
+                          border-radius: 10px;
+                          margin-top: 6px;
+                        }
+                  - type: custom:mushroom-climate-card
+                    entity: climate.bedroom_underfloor_heating
+                    name: Floor
+                    icon: mdi:heating-coil
+                    show_temperature_control: true
+                    collapsible_controls: false
+                    fill_container: true
+                    card_mod:
+                      style: |
+                        ha-card {
+                          background: rgba(255, 255, 255, 0.05) !important;
+                          border-radius: 14px !important;
+                          border: 1px solid rgba(255, 255, 255, 0.1) !important;
+                          box-shadow: none !important;
+                          --card-primary-font-size: 16px;
+                          --card-secondary-font-size: 14px;
+                          --icon-size: 24px;
+                          --spacing: 8px;
+                          overflow: hidden !important;
+                          padding: 12px !important;
+                          height: 100% !important;
+                          box-sizing: border-box !important;
+                        }
+                        mushroom-climate-temperature-control {
+                          --control-height: 32px;
+                          border-radius: 10px;
+                          margin-top: 6px;
+                        }
+          - type: custom:stack-in-card
+            mode: vertical
+            card_mod:
+              style: |
+                ha-card {
+                  background: rgba(255, 255, 255, 0.1);
+                  border: 1px solid rgba(255, 255, 255, 0.1);
+                  border-radius: 20px;
+                  box-shadow: none;
+                  padding: 16px;
+                  height: 100%;
+                  box-sizing: border-box;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                }
+            cards:
+              - type: custom:button-card
+                name: SHADES
+                show_icon: false
+                show_state: false
+                styles:
+                  card:
+                    - background: transparent
+                    - box-shadow: none
+                    - padding: 0 0 10px 0
+                    - border-radius: 0
+                  name:
+                    - font-size: 12px
+                    - font-weight: 600
+                    - letter-spacing: 2px
+                    - color: rgba(255, 255, 255, 0.5)
+                    - justify-self: start
+              - type: custom:layout-card
+                layout_type: custom:grid-layout
+                layout:
+                  grid-template-columns: 1fr 1fr 1fr
+                  grid-gap: 8px
+                card_mod:
+                  style: |
+                    ha-card {
+                      height: 100%;
+                    }
+                cards:
+                  - type: custom:button-card
+                    name: Blinds
+                    icon: mdi:blinds
+                    tap_action:
+                      action: none
+                    card_mod:
+                      style: |
+                        ha-card {
+                          border-radius: 14px !important;
+                          overflow: hidden !important;
+                          height: 100% !important;
+                        }
+                    styles:
+                      card:
+                        - padding: 14px 12px
+                        - background: rgba(255, 255, 255, 0.05)
+                        - border: 1px solid rgba(255, 255, 255, 0.1)
+                        - box-shadow: none
+                        - border-radius: 14px
+                        - overflow: hidden
+                      grid:
+                        - grid-template-areas: '"i" "n"'
+                        - grid-template-rows: 1fr min-content
+                      icon:
+                        - width: 32px
+                        - color: rgba(255, 255, 255, 0.6)
+                      name:
+                        - font-size: 16px
+                        - font-weight: 500
+                        - margin-top: 6px
+                        - color: white
+                  - type: custom:button-card
+                    name: Curtains
+                    icon: mdi:curtains
+                    tap_action:
+                      action: none
+                    card_mod:
+                      style: |
+                        ha-card {
+                          border-radius: 14px !important;
+                          overflow: hidden !important;
+                          height: 100% !important;
+                        }
+                    styles:
+                      card:
+                        - padding: 14px 12px
+                        - background: rgba(255, 255, 255, 0.05)
+                        - border: 1px solid rgba(255, 255, 255, 0.1)
+                        - box-shadow: none
+                        - border-radius: 14px
+                        - overflow: hidden
+                      grid:
+                        - grid-template-areas: '"i" "n"'
+                        - grid-template-rows: 1fr min-content
+                      icon:
+                        - width: 32px
+                        - color: rgba(255, 255, 255, 0.6)
+                      name:
+                        - font-size: 16px
+                        - font-weight: 500
+                        - margin-top: 6px
+                        - color: white
+                  - type: custom:button-card
+                    name: Shutters
+                    icon: mdi:window-shutter
+                    tap_action:
+                      action: none
+                    card_mod:
+                      style: |
+                        ha-card {
+                          border-radius: 14px !important;
+                          overflow: hidden !important;
+                          height: 100% !important;
+                        }
+                    styles:
+                      card:
+                        - padding: 14px 12px
+                        - background: rgba(255, 255, 255, 0.05)
+                        - border: 1px solid rgba(255, 255, 255, 0.1)
+                        - box-shadow: none
+                        - border-radius: 14px
+                        - overflow: hidden
+                      grid:
+                        - grid-template-areas: '"i" "n"'
+                        - grid-template-rows: 1fr min-content
+                      icon:
+                        - width: 32px
+                        - color: rgba(255, 255, 255, 0.6)
+                      name:
+                        - font-size: 16px
+                        - font-weight: 500
+                        - margin-top: 6px
+                        - color: white
+          - type: custom:stack-in-card
+            mode: vertical
+            card_mod:
+              style: |
+                ha-card {
+                  background: rgba(255, 255, 255, 0.1);
+                  border: 1px solid rgba(255, 255, 255, 0.1);
+                  border-radius: 20px;
+                  box-shadow: none;
+                  padding: 16px;
+                  height: 100%;
+                  box-sizing: border-box;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                }
+            cards:
+              - type: custom:button-card
+                name: MEDIA
+                show_icon: false
+                show_state: false
+                styles:
+                  card:
+                    - background: transparent
+                    - box-shadow: none
+                    - padding: 0 0 10px 0
+                    - border-radius: 0
+                  name:
+                    - font-size: 12px
+                    - font-weight: 600
+                    - letter-spacing: 2px
+                    - color: rgba(255, 255, 255, 0.5)
+                    - justify-self: start
+              - type: custom:layout-card
+                layout_type: custom:grid-layout
+                layout:
+                  grid-template-columns: 1fr 1fr
+                  grid-gap: 8px
+                card_mod:
+                  style: |
+                    ha-card {
+                      height: 100%;
+                    }
+                cards:
+                  - type: custom:button-card
+                    entity: media_player.lg_webos_tv_nano82t3b
+                    name: TV
+                    icon: mdi:television
+                    show_state: true
+                    tap_action:
+                      action: more-info
+                    card_mod:
+                      style: |
+                        ha-card {
+                          border-radius: 14px !important;
+                          overflow: hidden !important;
+                          height: 100% !important;
+                        }
+                    styles:
+                      card:
+                        - padding: 12px
+                        - background: rgba(255, 255, 255, 0.05)
+                        - border: 1px solid rgba(255, 255, 255, 0.1)
+                        - box-shadow: none
+                        - border-radius: 14px
+                        - overflow: hidden
+                      grid:
+                        - grid-template-areas: '"i" "n" "s"'
+                        - grid-template-rows: 1fr min-content min-content
+                      icon:
+                        - width: 32px
+                        - color: |
+                            [[[
+                              if (entity.state === 'playing') return '#22c55e';
+                              if (entity.state !== 'off' && entity.state !== 'unavailable') return '#60a5fa';
+                              return 'rgba(255, 255, 255, 0.4)';
+                            ]]]
+                      name:
+                        - font-size: 16px
+                        - font-weight: 500
+                        - margin-top: 6px
+                        - color: white
+                      state:
+                        - font-size: 14px
+                        - color: rgba(255, 255, 255, 0.5)
+                        - text-transform: capitalize
+                  - type: custom:button-card
+                    entity: sensor.voice_assistant_bedroom_voice_assistant
+                    name: Assistant
+                    show_state: true
+                    tap_action:
+                      action: call-service
+                      service: switch.toggle
+                      target:
+                        entity_id: switch.respeaker_xvf3800_assistant_microphone_mute
+                    icon: |
+                      [[[
+                        const muted = states['switch.respeaker_xvf3800_assistant_microphone_mute'];
+                        if (muted && muted.state === 'on') return 'mdi:microphone-off';
+                        if (entity.state === 'standby') return 'mdi:power-standby';
+                        if (entity.state === 'listening') return 'mdi:microphone';
+                        if (entity.state === 'processing') return 'mdi:brain';
+                        if (entity.state === 'speaking') return 'mdi:speaker';
+                        if (entity.state === 'idle') return 'mdi:account-voice';
+                        if (entity.state === 'offline') return 'mdi:close-circle';
+                        return 'mdi:microphone';
+                      ]]]
+                    card_mod:
+                      style: |
+                        ha-card {
+                          border-radius: 14px !important;
+                          overflow: hidden !important;
+                          height: 100% !important;
+                        }
+                    styles:
+                      card:
+                        - padding: 12px
+                        - background: rgba(255, 255, 255, 0.05)
+                        - border: 1px solid rgba(255, 255, 255, 0.1)
+                        - box-shadow: none
+                        - border-radius: 14px
+                        - overflow: hidden
+                      grid:
+                        - grid-template-areas: '"i" "n" "s"'
+                        - grid-template-rows: 1fr min-content min-content
+                      icon:
+                        - width: 32px
+                        - color: |
+                            [[[
+                              const muted = states['switch.respeaker_xvf3800_assistant_microphone_mute'];
+                              if (muted && muted.state === 'on') return '#ef4444';
+                              if (entity.state === 'standby') return 'rgba(255, 255, 255, 0.3)';
+                              if (entity.state === 'listening') return '#3b82f6';
+                              if (entity.state === 'processing') return '#f59e0b';
+                              if (entity.state === 'speaking') return '#22c55e';
+                              if (entity.state === 'idle') return '#8b5cf6';
+                              if (entity.state === 'offline') return '#ef4444';
+                              return 'rgba(255, 255, 255, 0.4)';
+                            ]]]
+                      name:
+                        - font-size: 16px
+                        - font-weight: 500
+                        - margin-top: 6px
+                        - color: white
+                      state:
+                        - font-size: 14px
+                        - color: rgba(255, 255, 255, 0.5)
+                        - text-transform: capitalize
