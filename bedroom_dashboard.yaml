@@ -914,12 +914,11 @@ views:
                       action: call-service
                       service: switch.toggle
                       target:
-                        entity_id: switch.respeaker_xvf3800_assistant_microphone_mute
+                        entity_id: switch.voice_assistant_bedroom_mute
                     icon: |
                       [[[
-                        const muted = states['switch.respeaker_xvf3800_assistant_microphone_mute'];
-                        if (muted && muted.state === 'on') return 'mdi:microphone-off';
-                        if (entity.state === 'standby') return 'mdi:power-standby';
+                        if (entity.state === 'muted') return 'mdi:microphone-off';
+                        if (entity.state === 'standby') return 'mdi:microphone-outline';
                         if (entity.state === 'listening') return 'mdi:microphone';
                         if (entity.state === 'processing') return 'mdi:brain';
                         if (entity.state === 'speaking') return 'mdi:speaker';
@@ -949,8 +948,7 @@ views:
                         - width: 32px
                         - color: |
                             [[[
-                              const muted = states['switch.respeaker_xvf3800_assistant_microphone_mute'];
-                              if (muted && muted.state === 'on') return '#ef4444';
+                              if (entity.state === 'muted') return '#ef4444';
                               if (entity.state === 'standby') return 'rgba(255, 255, 255, 0.3)';
                               if (entity.state === 'listening') return '#3b82f6';
                               if (entity.state === 'processing') return '#f59e0b';
